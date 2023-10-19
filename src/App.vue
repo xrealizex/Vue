@@ -1,47 +1,35 @@
-<script lang="ts">
-import { computed, defineComponent ,ref, watch } from "vue";
+<script setup lang="ts">
+import { ref } from 'vue';
+import OneInfo from './components/OneInfo.vue';
 
-export default defineComponent({
-  name: "App",
-  setup() {
-    const cocktailDataListInit = new Map<number, Cocktail>()
-  cocktailDataListInit.set(1, {id: 1, name: "ホワイトレディ", price: 1200})
-  cocktailDataListInit.set(2, {id: 2, name: "ブルーハワイ", price: 1500})
-  cocktailDataListInit.set(3, {id: 3, name: "ニューヨーク", price: 1100})
-  cocktailDataListInit.set(4, {id: 4, name: "マティーニ", price: 1500})
+const weatherListInit = new Map<number, Weather>()
+weatherListInit.set(1, {id: 1, title: "今日の天気", content: "今日は一日中、晴でしょう。"})
+weatherListInit.set(2, {id: 2, title: "明日の天気", content: "明日は一日中、雨でしょう。"})
+weatherListInit.set(3, {id: 3, title: "明後日の天気", content: "明後日は一日中、雪でしょう。"})
+const weatherList = ref(weatherListInit)
 
-  const cocktailNo = ref(1)
-  const priceMsg =computed(
-    ():string => {
-      const cocktail = cocktailDataListInit.get(cocktailNo.value)
-      let msg = "該当するカクテルはありません。"
-      if (cocktail != undefined) {
-        msg = `該当するカクテルは${cocktail.name}で、価格は${cocktail.price}円です。`
-      }
-      return msg;
-    }
-  )
-  setInterval(
-    (): void => {
-    cocktailNo.value = Math.round(Math.random() * 3) + 1
-  },
-  1000
-  )
-  return {
-    cocktailNo,
-    priceMsg
-  }
-  }
-})
-
-interface Cocktail {
+interface Weather {
   id: number;
-  name: string;
-  price: number;
+  title: string;
+  content: string;
 }
 </script>
 
 <template>
-  <p>現在のカクテル番号: {{cocktailNo}}</p>
-	<p>{{priceMsg}}</p>
+  <h1>Props基礎</h1>
+  <section>
+    <h2>属性に直接記述</h2>
+    <OneInfo
+      v-for="[id, weather] in weatherList"
+      v-bind:key="id"
+      v-bind:title="weather.title"
+      v-bind:content="weather.content" />
+  </section>
 </template>
+
+<style>
+section {
+  border: blue 1px solid;
+  margin: 10px;
+}
+</style>
