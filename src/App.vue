@@ -1,29 +1,48 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import OneInfo from './components/OneInfo.vue';
+import { ref, computed } from 'vue';
+import OneMember from './components/OneMember.vue';
 
-const weatherListInit = new Map<number, Weather>()
-weatherListInit.set(1, {id: 1, title: "今日の天気", content: "今日は一日中、晴でしょう。"})
-weatherListInit.set(2, {id: 2, title: "明日の天気", content: "明日は一日中、雨でしょう。"})
-weatherListInit.set(3, {id: 3, title: "明後日の天気", content: "明後日は一日中、雪でしょう。"})
-const weatherList = ref(weatherListInit)
+//会員リストデータを用意
+const memberListInit = new Map<number, Member>()
+memberListInit.set(33456, {id: 33456, name: "田中太郎", email: "bow@example.com", points: 35, note: "初回入会特典あり。"})
+memberListInit.set(47783, {id: 47783, name: "鈴木二郎", email: "mue@example.com", points: 53})
+const memberList = ref(memberListInit)
 
-interface Weather {
+
+//会員リスト内の全会員のポイント合計の算出プロパティ
+const totalPoints = computed(
+  ():number => {
+    let total = 0;
+    for(const member of memberList.value.values()) {
+      total += member.points;
+    }
+    return total
+  }
+)
+
+//会員情報型
+interface Member {
   id: number;
-  title: string;
-  content: string;
+  name: string;
+  email: string;
+  points: number;
+  note?: string
 }
 </script>
 
 <template>
-  <h1>Props基礎</h1>
   <section>
-    <h2>属性に直接記述</h2>
-    <OneInfo
-      v-for="[id, weather] in weatherList"
-      v-bind:key="id"
-      v-bind:title="weather.title"
-      v-bind:content="weather.content" />
+    <h1>会員リスト</h1>
+    <p>全会員の保有ポイントの合計：{{ totalPoints }}</p>
+    <OneMember
+    v-for="[id, member] in memberList"
+    v-bind:key="id"
+    v-bind:id="id"
+    v-bind:name="member.name"
+    v-bind:email="member.email"
+    v-bind:points="member.points"
+    v-bind:note="member.note"
+    />
   </section>
 </template>
 
