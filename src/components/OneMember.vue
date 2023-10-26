@@ -1,48 +1,44 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
+import type { Member } from '@/interfaces';
 
+//Props型定義
 interface Props {
   id: number;
-  name: string;
-  email: string;
-  points: number;
-  note?: string;
-}
-interface Emits {
-  (event: "update:points", points: number): void
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
+
+const memberList = inject("memberList") as Map<number, Member>
+
+const member = computed(
+  (): Member => {
+    return memberList.get(props.id) as Member;
+  }
+);
 
 const localNote = computed(
   (): string => {
-    let localNote = props.note
+    let localNote = member.value.note;
     if (localNote == undefined) {
       localNote = "--"
     }
     return localNote
   }
-)
-
-const onInput = (event: Event): void => {
-  const element = event.target as HTMLInputElement;
-  const inputPoints = Number(element.value);
-  emit("update:points", inputPoints)
-}
+);
 </script>
 
 <template>
   <section class="box">
-    <h4>{{ name }}さんの情報</h4>
+    <h4>{{ member.name }}さんの情報</h4>
     <dl>
       <dt>ID</dt>
       <dd>{{ id }}</dd>
       <dt>メールアドレス</dt>
-      <dd>{{ email }}</dd>
+      <dd>{{ member.email }}</dd>
       <dt>保有ポイント</dt>
       <dd>
-        <input type="number" v-bind:value="points" v-on:input="onInput">
+        <input type="number" v-model.number="member.points" >
       </dd>
       <dt>備考</dt>
       <dd>{{ localNote }}</dd>
