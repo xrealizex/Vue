@@ -1,16 +1,29 @@
 <script setup lang="ts">
-import { reactive, provide } from 'vue';
-import BaseSection from './components/BaseSection.vue';
-import type { Member } from './interfaces';
+import { ref } from 'vue';
+import Input from './components/Input.vue';
+import Radio from './components/Radio.vue';
+import Select from './components/Select.vue';
 
-//会員リストデータを用意
-const memberList = new Map<number, Member>();
-memberList.set(33456, {id: 33456, name: "田中太郎", email: "bow@example.com", points: 35, note: "初回入会特典あり。"});
-memberList.set(47783, {id: 47783, name: "鈴木二郎", email: "mue@example.com", points: 53});
+const currentComp = ref(Input);
+const currentCompName = ref("Input");
+const compList = [Input, Radio, Select];
+const compNameList = ["Input", "Radio", "Select"];
 
-provide("memberList", reactive(memberList));
+let currentCompIndex = 0;
+const switchComp = (): void => {
+  currentCompIndex++;
+  if (currentCompIndex >= 3) {
+    currentCompIndex = 0;
+  }
+  currentComp.value = compList[currentCompIndex];
+  currentCompName.value = compNameList[currentCompIndex];
+}
 </script>
 
 <template>
-  <BaseSection/>
+  <p>コンポーネント名： {{ currentCompName }}</p>
+  <KeepAlive>
+    <component v-bind:is="currentComp" />
+  </KeepAlive>
+  <button v-on:click="switchComp">切り替え</button>
 </template>
